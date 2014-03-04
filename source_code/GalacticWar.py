@@ -22,7 +22,7 @@ class Playership(Spaceship):
     def __init__(self, color, position):
         Spaceship.__init__(self, color, HEIGHT/20*0.6, HEIGHT/20)
         Spaceship.rect = pygame.Rect(0, 0, self.shipWidth, self.shipHeight)
-        pygame.draw.lines(self.image, pygame.Color(color), True, [(1, 1), (self.shipWidth/2, self.shipHeight-1), (self.shipWidth-1, 1), (self.shipWidth/2, 7)], 2)
+        pygame.draw.lines(self.image, pygame.Color(color), True, [(1, self.shipHeight-1), (self.shipWidth/2, 1), (self.shipWidth-1, self.shipHeight-1), (self.shipWidth/2, self.shipHeight-8)], 2)
         Spaceship.rect.center = position
         
         
