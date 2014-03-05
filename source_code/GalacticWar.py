@@ -8,12 +8,15 @@ from pygame.sprite import Sprite
 # global variables
 WIDTH = 1080
 HEIGHT = 720
+FPS = 60
 
 # define objects
 class Spaceship(Sprite):
-    def __init__(self, color, width, height, position):
+    def __init__(self, color, width, height, position, accel, maxSpeed):
         Sprite.__init__(self)
         self.velocity = [0, 0]     # velocity vector of spaceship
+        self.acceleration = accel      # acceleration in both direction
+        self.topSpeed = maxSpeed          # maximum speed of spaceship
         self.direction = 0         # spaceship rotation, north is 0, anti-clock
         self.shipHeight = height
         self.shipWidth = width
@@ -25,7 +28,7 @@ class Spaceship(Sprite):
 
 class Playership(Spaceship):
     def __init__(self, color, position):
-        Spaceship.__init__(self, color, HEIGHT/16*0.6, HEIGHT/16, position)
+        Spaceship.__init__(self, color, HEIGHT/16*0.6, HEIGHT/16, position, 1, 20)
 
         # draw player spaceship
         pygame.draw.lines(self.image, pygame.Color(color), True, [(1, self.shipHeight-1), (self.shipWidth/2, 1), (self.shipWidth-1, self.shipHeight-1), (self.shipWidth/2, self.shipHeight-8)], 1)
@@ -41,14 +44,35 @@ class Playership(Spaceship):
         self.image = pygame.transform.rotate(self.originImage, self.direction)
         self.rect = self.image.get_rect(center=self.rect.center)
 
+    def move(self):
+        # calculate velocity based on initial velocity
+        v = math.hypot(self.velocity[0], self.velocity[1]) + (self.acceleration / (FPS*0.1))
+        # test for maximum velocity
+        if v > self.topSpeed:
+            v -= (self.acceleration /2.0)
+        
+        mousePosition = pygame.mouse.get_pos()
+        if (math.hypot((self.position[0] - mousePosition[0]), (self.position[1] - mousePosition[1])) < 10):
+            # if mouse is within 10 pixel radius, don't move
+            self.velocity = [0, 0]
+        else:
+            # calculate velocity vector and move the rect and image
+            angle = self.direction
+            self.velocity[0] = math.sin(math.radians(angle)) * v * -1
+            self.velocity[1] = math.cos(math.radians(angle)) * v * -1
+            self.rect.move_ip(int(self.velocity[0]), int(self.velocity[1]))
+            self.position = (self.position[0] + self.velocity[0], self.position[1] + self.velocity[1])
+            self.rect.center = self.position
+
     def update(self):
         self.updateDirection()
+        self.move()
 
 # main function
 def main():
     # set window properties
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Galactic War v0.0.7")
+    pygame.display.set_caption("Galactic War v0.0.2")
 
     # background
     background = pygame.Surface([WIDTH, HEIGHT])
@@ -65,7 +89,7 @@ def main():
     running = True
     clock = pygame.time.Clock()
     while running:
-        clock.tick(120)
+        clock.tick(FPS)
         pygame.display.set_caption("Galactic War v0.0.7 - {0:.3f} fps".format(clock.get_fps()))
 
         sprites.update()
