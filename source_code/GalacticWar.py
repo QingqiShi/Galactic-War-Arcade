@@ -90,7 +90,7 @@ def main():
     clock = pygame.time.Clock()
     while running:
         clock.tick(FPS)
-        pygame.display.set_caption("Galactic War v0.0.7 - {0:.3f} fps".format(clock.get_fps()))
+        pygame.display.set_caption("Galactic War v0.0.2 - {0:.3f} fps".format(clock.get_fps()))
 
         sprites.update()
         sprites.draw(screen)
