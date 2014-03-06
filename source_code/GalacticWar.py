@@ -102,7 +102,7 @@ class Bullet(Sprite):
         # draw bullet
         self.position = position
         self.direction = angle
-        self.speed = 20
+        self.speed = 25
         self.image = pygame.Surface([1, 20])
         self.originImage = self.image
         self.rect = self.image.get_rect()
