@@ -30,7 +30,7 @@ class Spaceship(Sprite):
 
 class Playership(Spaceship):
     def __init__(self, color, position):
-        Spaceship.__init__(self, color, HEIGHT/16*0.6, HEIGHT/16, position, 0.5, 10)
+        Spaceship.__init__(self, color, HEIGHT/16*0.6, HEIGHT/16, position, 1, 15)
 
         # draw player spaceship
         pygame.draw.lines(self.image, pygame.Color(color), True, [(1, self.shipHeight-1), (self.shipWidth/2, 1), (self.shipWidth-1, self.shipHeight-1), (self.shipWidth/2, self.shipHeight-8)], 2)
@@ -47,57 +47,44 @@ class Playership(Spaceship):
         self.rect = self.image.get_rect(center=self.rect.center)
 
     def move(self):
-        # calculate velocity based on initial velocity
-        #u = math.hypot(self.velocity[0], self.velocity[1])
-        #v = math.hypot(self.velocity[0], self.velocity[1]) + self.acceleration)
-        # test for maximum velocity
-        #if v > self.topSpeed:
-        #    v -= (self.acceleration /2.0)
-        
-        mousePosition = pygame.mouse.get_pos()
-
-        accel = self.acceleration
-        #dist = math.hypot((mousePosition[0] - self.position[0]),(mousePosition[1] - self.position[1]))
-        #if (dist < 1000):
-        #    accel = (self.acceleration / 1000) * dist
-
-        v = [0, 0]
-        b = math.hypot(self.velocity[0], self.velocity[1])
-        if b == 0:
-            b = 1
-        beta = self.direction - math.acos(self.velocity[1]/b)
-        a = math.sqrt(b*b+accel*accel-2*b*accel*math.cos(beta))
-        alpha = math.asin((math.sin(beta)*b)/a)
-
-        v[0] = self.velocity[0] - math.sin(math.radians(180 - self.direction - alpha)) * accel
-        v[1] = self.velocity[1] + math.cos(math.radians(180 - self.direction - alpha)) * accel
-
-        if v[0] > 0:
-            v[0] - AIRRESISTANCE
-        elif v[0] < 0:
-            v[0] + AIRRESISTANCE
-
-        if v[1] > 0:
-            v[1] - AIRRESISTANCE
-        elif v[1] < 0:
-            v[1] + AIRRESISTANCE
-
-        print math.hypot(v[0], v[1])
-        if (math.hypot((self.position[0] - mousePosition[0]), (self.position[1] - mousePosition[1])) < 50):
-            # if mouse is within 10 pixel radius, don't move
-            self.velocity = [0, 0]
+        if pygame.mouse.get_pressed()[2]:
+            # calculate velocity based on initial velocity
+            v = math.hypot(self.velocity[0], self.velocity[1]) + (self.acceleration / (FPS*0.1))
+            # test for maximum velocity
+            if v > self.topSpeed:
+                v -= (self.acceleration /2.0)
+            
+            mousePosition = pygame.mouse.get_pos()
+            if (math.hypot((self.position[0] - mousePosition[0]), (self.position[1] - mousePosition[1])) < 10):
+                # if mouse is within 10 pixel radius, don't move
+                self.velocity = [0, 0]
+            else:
+                # calculate velocity vector and move the rect and image
+                angle = self.direction
+                self.velocity[0] = math.sin(math.radians(angle)) * v * -1
+                self.velocity[1] = math.cos(math.radians(angle)) * v * -1
+                
         else:
-            # calculate velocity vector and move the rect and image
-            if math.hypot(v[0], v[1]) <= self.topSpeed:
-                self.velocity[0] = v[0]
-                self.velocity[1] = v[1]
-            self.rect.move_ip(int(self.velocity[0]), int(self.velocity[1]))
-            self.position = (self.position[0] + self.velocity[0], self.position[1] + self.velocity[1])
-            self.rect.center = self.position
+            if self.velocity[0] != 0:
+                self.velocity[0] *= 0.9
+            if self.velocity[1] != 0:
+                self.velocity[1] *= 0.9
+            if -0.001 < self.velocity[0] < 0.001:
+                self.velocity[0] = 0
+            if -0.001 < self.velocity[1] < 0.001:
+                self.velocity[1] = 0
+
+        self.rect.move_ip(int(self.velocity[0]), int(self.velocity[1]))
+        self.position = (self.position[0] + self.velocity[0], self.position[1] + self.velocity[1])
+        self.rect.center = self.position
 
     def update(self):
         self.updateDirection()
         self.move()
+
+class bullet(object):
+    def __init__(self):
+        pass
 
 # main function
 def main():
