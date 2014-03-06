@@ -30,6 +30,8 @@ class Playership(Spaceship):
     def __init__(self, color, position):
         Spaceship.__init__(self, color, HEIGHT/16*0.6, HEIGHT/16, position, 1, 15)
 
+        self.coolDown = 0
+
         # draw player spaceship
         lines = [(1, self.shipHeight-1), (self.shipWidth/2, 1), (self.shipWidth-1, self.shipHeight-1), (self.shipWidth/2, self.shipHeight-8)]
         pygame.draw.lines(self.image, pygame.Color(color), True, lines, 2)
@@ -46,6 +48,7 @@ class Playership(Spaceship):
         self.rect = self.image.get_rect(center=self.rect.center)
 
     def move(self):
+        print self.direction
         if pygame.mouse.get_pressed()[2]:
             # accelerate if right mouse id down
             # calculate velocity based on initial velocity
@@ -80,8 +83,14 @@ class Playership(Spaceship):
         self.rect.center = self.position
 
     def shoot(self, screen):
-        bullet = Bullet(1, (self.position[0], self.position[1]), self.direction)
-        return bullet
+
+        if self.coolDown == 0:
+            self.coolDown = 5
+            bullet = Bullet(1, (self.position[0], self.position[1]), self.direction)
+            return bullet
+        else:
+            self.coolDown-=1
+            return None
 
     def update(self):
         self.updateDirection()
@@ -93,7 +102,7 @@ class Bullet(Sprite):
         # draw bullet
         self.position = position
         self.direction = angle
-        self.speed = 1
+        self.speed = 20
         self.image = pygame.Surface([1, 20])
         self.originImage = self.image
         self.rect = self.image.get_rect()
@@ -106,10 +115,10 @@ class Bullet(Sprite):
 
     def move(self):
         v = [0, 0]
-        v[0] = int(-1 * (math.sin(self.direction) * 20 + 20) * self.speed)
-        v[1] = int(-1 * (math.cos(self.direction) * 20 + 20) * self.speed)
-        self.rect.move_ip(v[0], v[1])
-        self.position = (self.position[0] + v[0], self.position[1] + v[1])
+        v[0] = int(math.sin(math.radians(self.direction)) * self.speed)
+        v[1] = int(math.cos(math.radians(self.direction)) * self.speed)
+        self.rect.move_ip(v[0] * -1, v[1] * -1)
+        self.position = (self.position[0] - v[0], self.position[1] - v[1])
         self.rect.center = self.position
         
     def update(self):
@@ -148,8 +157,9 @@ def main():
 
         if pygame.mouse.get_pressed()[0]:
             bullet = player.shoot(screen)
-            bulletArray.append(bullet)
-            sprites.add(bullet)
+            if bullet != None:
+                bulletArray.append(bullet)
+                sprites.add(bullet)
         for temp_bullet in bulletArray:
             if temp_bullet.position[0] < 0 or temp_bullet.position[0] > WIDTH:
                 sprites.remove(temp_bullet)
@@ -161,7 +171,6 @@ def main():
         sprites.draw(screen)
         pygame.display.flip()
         sprites.clear(screen, background)
-        print bulletArray.__len__()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
