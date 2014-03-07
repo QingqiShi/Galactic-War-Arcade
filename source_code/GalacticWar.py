@@ -6,9 +6,9 @@ import pygame
 from pygame.sprite import Sprite
 
 # global variables
-WIDTH = 1080
+WIDTH = 1280
 HEIGHT = 720
-FPS = 30
+FPS = 60
 
 # define objects
 class Spaceship(Sprite):
@@ -103,11 +103,11 @@ class Bullet(Sprite):
         self.position = position
         self.direction = angle
         self.speed = 25
-        self.image = pygame.Surface([3, 20])
+        self.image = pygame.Surface([4, 20])
         self.originImage = self.image
         self.rect = self.image.get_rect()
         self.rect.center = self.position
-        pygame.draw.line(self.image, pygame.Color("white"), (1, 1), (1, 19))
+        pygame.draw.line(self.image, pygame.Color("white"), (1, 1), (1, 19),2)
 
         # rotate image
         self.image = pygame.transform.rotate(self.originImage, self.direction)
@@ -127,7 +127,11 @@ class Bullet(Sprite):
 # main function
 def main():
     # set window properties
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.init()
+    infoObject = pygame.display.Info()
+    WIDTH = infoObject.current_w
+    HEIGHT = infoObject.current_h
+    screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
     pygame.display.set_caption("Galactic War v0.0.2")
 
     # background
@@ -174,6 +178,9 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
 
 # if executed as a script, run main()
 if __name__ == "__main__":
