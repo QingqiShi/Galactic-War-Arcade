@@ -103,11 +103,11 @@ class Bullet(Sprite):
         self.position = position
         self.direction = angle
         self.speed = 25
-        self.image = pygame.Surface([1, 20])
+        self.image = pygame.Surface([3, 20])
         self.originImage = self.image
         self.rect = self.image.get_rect()
         self.rect.center = self.position
-        pygame.draw.line(self.image, pygame.Color("white"), (0, 0), (0, 19))
+        pygame.draw.line(self.image, pygame.Color("white"), (1, 1), (1, 19))
 
         # rotate image
         self.image = pygame.transform.rotate(self.originImage, self.direction)
