@@ -139,9 +139,9 @@ def main():
     background.fill(pygame.Color("black"))
     screen.blit(background, (0, 0))
 
-    bgimg = pygame.Surface([2560, 1600])
-    bgimg = pygame.image.load('img/bg.png')
-    screen.blit(bgimg, (0, 0))
+    #bgimg = pygame.Surface([2560, 1600])
+    #bgimg = pygame.image.load('img/bg.png')
+    #screen.blit(bgimg, (0, 0))
 
     # setup sprites
     player = Playership("#00CCFF", (WIDTH/2, HEIGHT/2))
@@ -179,7 +179,7 @@ def main():
         sprites.draw(screen)
         pygame.display.flip()
         sprites.clear(screen, background)
-        sprites.clear(screen, bgimg)
+        #sprites.clear(screen, bgimg)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
