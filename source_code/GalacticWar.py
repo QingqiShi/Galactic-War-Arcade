@@ -4,6 +4,13 @@
 import math
 import pygame
 
+# import different modules
+from Spaceship  import *
+from Weapon import *
+from Meteoroid import *
+from PowerUp import *
+from HUD import *
+
 def main():
     screen = pygame.display.set_mode((1024, 768))
     startGame(screen, 1)
@@ -12,11 +19,11 @@ def startGame(screen, level):
     background = pygame.image.load('img/bg.jpg')
 
     sprites = pygame.sprite.Group()
-    playerShip = PlayerShip(sprites, [320, 480], 6.8, 13, 0, 'img/playership1.png')
+    playerShip = PlayerShip(sprites, [320, 480], 6.8, 13, Weapon(sprites, 0, 0.5), 'img/playership1.png')
 
     clock = pygame.time.Clock()
     while True:
-        tickReturn = clock.tick(120) / 1000.0
+        tickReturn = clock.tick(60) / 1000.0
         pygame.display.set_caption("Galactic War v0.1.0 - {0:.3f} fps - {1:.4f}".format(clock.get_fps(), tickReturn))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -30,128 +37,6 @@ def startGame(screen, level):
         screen.blit(background, (-500, -500))
         sprites.draw(screen)
         pygame.display.flip()
-
-class Spaceship(pygame.sprite.Sprite):
-    velocity = [0, 0]
-    speed = 0.0
-    acceleration = 0.0
-    maxSpeed = 0
-    direction = 0
-    weapon = 0
-    center = [0, 0]
-
-    def __init__(self, groups, position, acceleration, maxSpeed, weapon, image_path):
-        super(Spaceship, self).__init__(groups)
-        self.image = pygame.image.load(image_path)
-        self.originImage = self.image
-        self.rect = pygame.rect.Rect((position[0], position[1]), self.image.get_size())
-
-        self.acceleration = acceleration
-        self.maxSpeed = maxSpeed
-        self.weapon = weapon
-
-        self.calculateCenter()
-
-    def update(self, tickReturn):
-        key = pygame.key.get_pressed()
-        if key[pygame.K_LEFT]:
-            self.rect.x -= math.ceil(600 * tickReturn)
-        if key[pygame.K_RIGHT]:
-            self.rect.x += math.ceil(600 * tickReturn)
-        if key[pygame.K_UP]:
-            self.rect.y -= math.ceil(600 * tickReturn)
-        if key[pygame.K_DOWN]:
-            self.rect.y += math.ceil(600 * tickReturn)
-
-    def updateDirection(self, position):
-        # Calculate a new direction for spaceship pointing to a position (in radians)
-        x = position[0] - self.center[0]
-        y = position[1] - self.center[1]
-        if (x >= 0 and y < 0):
-            # top right quadrum
-            self.direction = math.atan(float(x)/float(-y))
-        elif (x <= 0 and y > 0):
-            # bottom left quadrum
-            self.direction = math.pi + math.atan(float(-x)/float(y))
-        elif (x > 0 and y >= 0):
-            # bottom right quadrum
-            self.direction = (math.pi / 2.0) + math.atan(float(y)/float(x))
-        elif (x < 0 and y <= 0):
-            # top left quadrum
-            self.direction = (math.pi * 1.5) + math.atan(float(-y)/float(-x))
-
-    def accelerate(self, tickReturn):
-        newSpeed =  self.speed + (self.acceleration * tickReturn)
-
-        # test for maxSpeed
-        if newSpeed > self.maxSpeed:
-            newSpeed = self.maxSpeed
-        
-        # calculate velocity vector
-        self.velocity[0] = math.sin(self.direction) * newSpeed
-        self.velocity[1] = math.cos(self.direction) * newSpeed * -1
-
-        self.speed = newSpeed
-            
-    def deccelerate(self, tickReturn):
-        oldSpeed = self.speed
-        newSpeed =  oldSpeed - (self.acceleration * tickReturn * 2)
-
-        # test for maxSpeed
-        if newSpeed > 0.5:
-
-            # Find the factor
-            factor = newSpeed / oldSpeed
-            self.velocity[0] *= factor
-            self.velocity[1] *= factor
-
-            self.speed = newSpeed
-
-        else:
-            self.velocity[0] = 0
-            self.velocity[1] = 0
-
-            self.speed = 0
-
-    def changeWeapon(self, weaponNum):
-        self.weapon = weaponNum
-
-    def calculateCenter(self):
-        self.center = self.rect.center
-
-
-class PlayerShip(Spaceship):
-    def __init__(self, groups, position, acceleration, maxSpeed, weapon, image_path):
-        super(PlayerShip, self).__init__(groups, position, acceleration, maxSpeed, weapon, image_path)
-
-    def update(self, tickReturn):
-        super(PlayerShip, self).updateDirection(pygame.mouse.get_pos())
-
-        # rotate image
-        self.image = pygame.transform.rotate(self.originImage, math.degrees(self.direction) * -1)
-        self.rect = self.image.get_rect(center=self.rect.center)
-
-        super(PlayerShip, self).calculateCenter()
-
-        
-
-        mouseDistance = math.hypot(pygame.mouse.get_pos()[0] - self.center[0], pygame.mouse.get_pos()[1] - self.center[1])
-
-        print(self.speed)
-
-        if (pygame.mouse.get_pressed()[2] and mouseDistance > 5):
-            super(PlayerShip, self).accelerate(tickReturn)
-        elif (mouseDistance < 5):
-            self.velocity = [0, 0]
-        else:
-            super(PlayerShip, self).deccelerate(tickReturn)
-
-        self.rect.move_ip(self.velocity[0], self.velocity[1]) 
-
-    # self.rect.move_ip(int(self.velocity[0]), int(self.velocity[1]))
-    # self.position = (self.position[0] + self.velocity[0], self.position[1] + self.velocity[1])
-    # self.rect.center = self.position
-
 
 if __name__ == "__main__":
     pygame.init()
