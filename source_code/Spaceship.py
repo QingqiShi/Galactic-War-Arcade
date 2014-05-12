@@ -89,6 +89,9 @@ class Spaceship(pygame.sprite.Sprite):
     def calculateCenter(self):
         self.center = self.rect.center
 
+    def fire(self):
+        self.weapon.fire(self.rect.topleft, self.direction)
+        print("Fire!")
 
 class PlayerShip(Spaceship):
     def __init__(self, groups, position, acceleration, maxSpeed, weapon, image_path):
@@ -115,5 +118,8 @@ class PlayerShip(Spaceship):
             self.velocity = [0, 0]
         else:
             super(PlayerShip, self).deccelerate(tickReturn)
+
+        if (pygame.mouse.get_pressed()[0]):
+            super(PlayerShip, self).fire()
 
         self.rect.move_ip(self.velocity[0], self.velocity[1])
