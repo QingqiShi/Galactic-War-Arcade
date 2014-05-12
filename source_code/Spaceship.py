@@ -124,3 +124,19 @@ class PlayerShip(Spaceship):
         self.rect.move_ip(self.velocity[0], self.velocity[1])
 
         self.weapon.clearBullets()
+
+class EnemyShip(Spaceship):
+    def __init__(self, groups, position, acceleration, maxSpeed, weapon, image_path, playership):
+        super(EnemyShip, self).__init__(groups, position, acceleration, maxSpeed, weapon, image_path)
+        self.playership = playership
+
+    def update(self, tickReturn):
+        oldDirection = self.direction
+        super(EnemyShip, self).updateDirection(self.playership.center)
+
+        if (oldDirection != self.direction):
+            # rotate image
+            self.image = pygame.transform.rotate(self.originImage, math.degrees(self.direction) * -1)
+            self.rect = self.image.get_rect(center=self.rect.center)
+
+            super(EnemyShip, self).calculateCenter()

@@ -25,7 +25,6 @@ class Weapon(object):
             self.lastFired = time.time()
 
     def clearBullets(self):
-        print(len(self.bullets))
         for bullet in self.bullets:
             bullet_x = bullet.rect.center[0]
             bullet_y = bullet.rect.center[1]

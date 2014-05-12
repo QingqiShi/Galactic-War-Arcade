@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 # import required modules
-import math
 import pygame
 
 # import different modules
@@ -20,6 +19,7 @@ def startGame(screen, level):
 
     sprites = pygame.sprite.Group()
     playerShip = PlayerShip(sprites, [320, 480], 6.8, 13, Weapon(sprites, 0), 'img/playership1.png')
+    enemyShip = EnemyShip(sprites, [320, 320], 6.8, 13, Weapon(sprites, 0), 'img/enemyship1.png', playerShip)
 
     clock = pygame.time.Clock()
     while True:
