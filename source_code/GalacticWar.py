@@ -19,7 +19,7 @@ def startGame(screen, level):
     background = pygame.image.load('img/bg.jpg')
 
     sprites = pygame.sprite.Group()
-    playerShip = PlayerShip(sprites, [320, 480], 6.8, 13, Weapon(sprites, 0, 0.5), 'img/playership1.png')
+    playerShip = PlayerShip(sprites, [320, 480], 6.8, 13, Weapon(sprites, 0, 0.5, 2), 'img/playership1.png')
 
     clock = pygame.time.Clock()
     while True:

@@ -15,5 +15,5 @@ class Weapon(object):
 
 class Bullet(pygame.sprite.Sprite):
     bulletSpeed = 0.0
-    def __init__(self, groups, bulletSpeed, weaponNum)：
+    def __init__(self, groups, bulletSpeed, weaponNum):
         self.bulletSpeed = bulletSpeed
