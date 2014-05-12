@@ -68,7 +68,7 @@ class Spaceship(pygame.sprite.Sprite):
         # test for maxSpeed
         if self.speed > 0.5:
 
-            newSpeed =  self.speed - (self.acceleration * tickReturn * 2)
+            newSpeed =  self.speed - (self.acceleration * tickReturn)
 
             # Find the factor
             factor = newSpeed / self.speed
@@ -140,3 +140,5 @@ class EnemyShip(Spaceship):
             self.rect = self.image.get_rect(center=self.rect.center)
 
             super(EnemyShip, self).calculateCenter()
+
+        super(EnemyShip, self).fire()
