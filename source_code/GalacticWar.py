@@ -3,6 +3,7 @@
 # import required modules
 import math
 import pygame
+from random import randrange
 
 # import different modules
 from Spaceship  import *
@@ -19,8 +20,8 @@ def startGame(screen, level):
     background = pygame.image.load('img/bg.jpg')
 
     sprites = pygame.sprite.Group()
-    playerShip = PlayerShip(sprites, [320, 480], 6.8, 13, Weapon(sprites, 0, 0.5), 'img/playership1.png')
-
+    playerShip = PlayerShip(sprites, [320, 480], 100, 13, Weapon(sprites, 0, 0.5), 'img/playership1.png')
+    meteoroid = Meteoroid(sprites, [500, 500],10.0, 10, 'img/meteoroid.png')
     clock = pygame.time.Clock()
     while True:
         tickReturn = clock.tick(60) / 1000.0

@@ -23,17 +23,6 @@ class Spaceship(pygame.sprite.Sprite):
 
         self.calculateCenter()
 
-    def update(self, tickReturn):
-        key = pygame.key.get_pressed()
-        if key[pygame.K_LEFT]:
-            self.rect.x -= math.ceil(600 * tickReturn)
-        if key[pygame.K_RIGHT]:
-            self.rect.x += math.ceil(600 * tickReturn)
-        if key[pygame.K_UP]:
-            self.rect.y -= math.ceil(600 * tickReturn)
-        if key[pygame.K_DOWN]:
-            self.rect.y += math.ceil(600 * tickReturn)
-
     def updateDirection(self, position):
         # Calculate a new direction for spaceship pointing to a position (in radians)
         x = position[0] - self.center[0]
