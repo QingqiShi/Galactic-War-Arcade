@@ -15,7 +15,7 @@ class Weapon(object):
         self.groups = groups
 
         if weaponNum == 0:
-            self.coolDown = 0.3
+            self.coolDown = 0.5
             self.bulletSpeed = 500
 
     def fire(self, position, direction):
