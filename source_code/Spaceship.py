@@ -111,9 +111,9 @@ class PlayerShip(Spaceship):
 
         mouseDistance = math.hypot(pygame.mouse.get_pos()[0] - self.center[0], pygame.mouse.get_pos()[1] - self.center[1])
 
-        if (pygame.mouse.get_pressed()[2] and mouseDistance > 5):
+        if (pygame.mouse.get_pressed()[2] and mouseDistance > 20):
             super(PlayerShip, self).accelerate(tickReturn)
-        elif (mouseDistance < 5):
+        elif (mouseDistance < 20):
             self.velocity = [0, 0]
         else:
             super(PlayerShip, self).deccelerate(tickReturn)

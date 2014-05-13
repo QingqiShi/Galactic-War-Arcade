@@ -2,6 +2,7 @@
 
 # import required modules
 import pygame
+import random
 
 # import different modules
 from Spaceship  import *
@@ -18,8 +19,11 @@ def startGame(screen, level):
     background = pygame.image.load('img/bg.jpg')
 
     sprites = pygame.sprite.Group()
-    playerShip = PlayerShip(sprites, [320, 480], 6.8, 13, Weapon(sprites, 0), 'img/playership1.png')
-    enemyShip = EnemyShip(sprites, [320, 320], 6.8, 13, Weapon(sprites, 0), 'img/enemyship1.png', playerShip)
+    enemy = pygame.sprite.Group()
+    playerDeadly = pygame.sprite.Group()
+    enemyDeadly = pygame.sprite.Group()
+    playerShip = PlayerShip(sprites, [320, 480], 6.8, 13, Weapon(enemyDeadly, 0), 'img/playership1.png')
+    # enemyShip = EnemyShip(enemy, [320, 320], 6.8, 13, Weapon(playerDeadly, 0), 'img/enemyship1.png', playerShip)
 
     clock = pygame.time.Clock()
     while True:
@@ -31,11 +35,29 @@ def startGame(screen, level):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 return
 
-        
+        if random.randint(1, 200) == 1:
+            randomTick = True
+        else:
+            randomTick = False
+
+        if randomTick:
+            enemyShip = EnemyShip(enemy, [random.randint(10, 1000), random.randint(10, 750)], 6.8, 13, Weapon(playerDeadly, 0), 'img/enemyship1.png', playerShip)
+
         sprites.update(tickReturn)
+        enemy.update(tickReturn)
+        enemyDeadly.update(tickReturn)
+        playerDeadly.update(tickReturn)
+
+        deadEnemyList = pygame.sprite.groupcollide(enemy, enemyDeadly, True, True, pygame.sprite.collide_rect_ratio(0.4))
+
+        deadPlayerList = pygame.sprite.groupcollide(sprites, playerDeadly, True, True, pygame.sprite.collide_rect_ratio(0.4))
+
         screen.fill((0,0,0))
         screen.blit(background, (-500, -500))
         sprites.draw(screen)
+        enemy.draw(screen)
+        enemyDeadly.draw(screen)
+        playerDeadly.draw(screen)
         pygame.display.flip()
 
 if __name__ == "__main__":

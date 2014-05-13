@@ -16,7 +16,7 @@ class Weapon(object):
 
         if weaponNum == 0:
             self.coolDown = 0.3
-            self.bulletSpeed = 1000
+            self.bulletSpeed = 500
 
     def fire(self, position, direction):
         if time.time() - self.lastFired > self.coolDown:
