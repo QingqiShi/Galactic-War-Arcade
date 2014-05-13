@@ -13,9 +13,11 @@ from HUD import *
 
 def main():
     screen = pygame.display.set_mode((1024, 768))
-    startGame(screen, 1)
+    quit = False
+    while not quit:
+        quit = startGame(screen)
 
-def startGame(screen, level):
+def startGame(screen):
     background = pygame.image.load('img/bg.jpg')
 
     alive = True
@@ -25,17 +27,20 @@ def startGame(screen, level):
     playerDeadly = pygame.sprite.Group()
     enemyDeadly = pygame.sprite.Group()
 
-    playerShip = PlayerShip(sprites, [320, 480], 6.8, 13, Weapon(enemyDeadly, 0), 'img/playership1.png')
+    playerShip = PlayerShip(sprites, [512, 384], 6.8, 13, Weapon(enemyDeadly, 0), 'img/playership1.png')
 
     clock = pygame.time.Clock()
     while True:
         tickReturn = clock.tick(60) / 1000.0
-        pygame.display.set_caption("Galactic War v0.1.0 - {0:.3f} fps - {1:.4f}".format(clock.get_fps(), tickReturn))
+        pygame.display.set_caption("Galactic War v0.1.0 - {0:.3f} fps".format(clock.get_fps()))
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return
+                return True
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                return
+                return True
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                return False
 
         if random.randint(1, 200) == 1:
             randomTick = True
@@ -51,6 +56,8 @@ def startGame(screen, level):
         playerDeadly.update(tickReturn)
 
         deadEnemyList = pygame.sprite.groupcollide(enemy, enemyDeadly, True, True, pygame.sprite.collide_rect_ratio(0.4))
+
+        playerEnemyCrashList = pygame.sprite.groupcollide(sprites, enemy, False, True, pygame.sprite.collide_rect_ratio(0.4))
 
         deadPlayerList = pygame.sprite.groupcollide(sprites, playerDeadly, True, True, pygame.sprite.collide_rect_ratio(0.4))
 
