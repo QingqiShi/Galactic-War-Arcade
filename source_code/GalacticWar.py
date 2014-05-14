@@ -39,8 +39,8 @@ def startGame(screen):
     # start game loop
     clock = pygame.time.Clock()
     while True:
-        timeCounter = clock.tick(60)
-        tickReturn = timeCounter / 1000.0
+        tickReturn = clock.tick(60) / 1000.0
+        timeCounter += tickReturn
         pygame.display.set_caption("Galactic War v0.1.2 - {0:.3f} fps".format(clock.get_fps()))
 
         # handle events
@@ -72,8 +72,9 @@ def startGame(screen):
             if alive and len(enemy.sprites()) < difficulty:
                 enemyShip = EnemyShip(enemy, [random.randint(10, 1000), random.randint(10, 750)], 6.8, 13, Weapon(playerDeadly, 0), 'img/enemyship1.png', playerShip)
 
-        if alive:
-            score += timeCounter
+        if alive and timeCounter > 5:
+            timeCounter = 0
+            score += 1
             print(score)
 
         # update sprites
@@ -88,7 +89,8 @@ def startGame(screen):
             alive = False
 
         for deadEnemy in deadEnemyList:
-            score += 1000
+            score += 10
+            print(score)
 
         updateScreen(spritesList, screen)
 
