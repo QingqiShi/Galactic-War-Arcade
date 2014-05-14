@@ -9,6 +9,8 @@ class Menu(object):
         #        3 = Game Over
 
         if menuID == 2:
+            screen.blit(pygame.font.SysFont("monospace", 72, True).render("Game Paused", 1, (91, 109, 131)), (320, 300))
+            screen.blit(pygame.font.SysFont("monospace", 16, True).render("Press ESC to resume", 1, (91, 109, 131)), (420, 370))
         elif menuID == 3:
             screen.blit(pygame.font.SysFont("monospace", 72, True).render("Game Over", 1, (91, 109, 131)), (320, 300))
             screen.blit(pygame.font.SysFont("monospace", 16, True).render("Press R to restart", 1, (91, 109, 131)), (420, 370))

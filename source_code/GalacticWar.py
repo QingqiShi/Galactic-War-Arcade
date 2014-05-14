@@ -32,7 +32,7 @@ def startGame(screen):
     score = 0
     timeCounter = 0
 
-    f = open('highScore', 'r')
+    f = open('highScore', 'a+')
     temp = f.read()
     if temp != "":
         highScore = int(temp)
@@ -43,6 +43,7 @@ def startGame(screen):
     # create player ship
     playerShip = PlayerShip(sprites, [512, 384], 6.8, 13, Weapon(enemyDeadly, 0), 'img/playership1.png')
     alive = True
+    pause = False
 
     # create HUD
     hud = HUD(screen)
@@ -61,24 +62,25 @@ def startGame(screen):
                 f.write(str(highScore))
                 f.close()
                 return True
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and alive:
+                if pause:
+                    pause = False
+                else:
+                    pause = True
         key = pygame.key.get_pressed()
         if key[pygame.K_r]:
             f = open('highScore', 'w')
             f.write(str(highScore))
             f.close()
             return False
-        if key[pygame.K_ESCAPE]:
-            f = open('highScore', 'w')
-            f.write(str(highScore))
-            f.close()
-            return True
+        
 
         # calculate random tick
         randomTick = random.randint(0, 4 * int(clock.get_fps())) == 1 and True or False
 
         # handle randomTick action
         if randomTick:
-            if alive:
+            if alive and (not pause):
                 timePassed = time.time() - gameStartTime
                 if (timePassed < 15):
                     difficulty = 1
@@ -89,10 +91,10 @@ def startGame(screen):
                 else:
                     difficulty = 4
 
-            if alive and len(enemy.sprites()) < difficulty:
+            if alive and (not pause) and len(enemy.sprites()) < difficulty:
                 enemyShip = EnemyShip(enemy, [random.randint(10, 1000), random.randint(10, 750)], 6.8, 13, Weapon(playerDeadly, 0), 'img/enemyship1.png', playerShip)
 
-        if alive:
+        if alive and (not pause):
 
             if timeCounter > 5:
                 timeCounter = 0
@@ -116,10 +118,9 @@ def startGame(screen):
                 if score > highScore:
                     highScore = score
 
-        updateScreen(spritesList, screen, hud, score, highScore, alive)
+        updateScreen(spritesList, screen, hud, score, highScore, alive, pause)
 
-
-def updateScreen(spritesList, screen, hud, score, highScore, alive):
+def updateScreen(spritesList, screen, hud, score, highScore, alive, pause):
     # background = pygame.image.load('img/bg.jpg')
     screen.fill((0,0,0))
     # screen.blit(background, (-500, -500))
@@ -128,6 +129,8 @@ def updateScreen(spritesList, screen, hud, score, highScore, alive):
     hud.updateScore(score)
     if not alive:
         Menu().displayMenu(screen, 3, score, highScore)
+    elif pause:
+        Menu().displayMenu(screen, 2)
 
     pygame.display.flip()
 
