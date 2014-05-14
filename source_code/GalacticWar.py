@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+# G51FSE Coursework
+# Names: Qingqi Shi & Yinfeng Xie
+
 # import required modules
 import pygame
 import random
