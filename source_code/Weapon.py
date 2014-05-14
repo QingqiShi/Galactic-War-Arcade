@@ -18,11 +18,16 @@ class Weapon(object):
             self.coolDown = 0.5
             self.bulletSpeed = 500
 
+        self.sound = pygame.mixer.Sound('weapon1.ogg')
+        print(self.sound.get_length())
+
     def fire(self, position, direction):
         if time.time() - self.lastFired > self.coolDown:
+            self.sound.play()
             newBullet = Bullet(self.groups, self.bulletSpeed, self.weaponNum, position, direction)
             self.bullets.append(newBullet)
             self.lastFired = time.time()
+
 
     def clearBullets(self):
         for bullet in self.bullets:

@@ -14,12 +14,14 @@ from Menu import *
 from HUD import *
 
 def main():
+
     screen = pygame.display.set_mode((1024, 768))
     quit = False
     while not quit:
         quit = startGame(screen)
 
 def startGame(screen):
+    pygame.mixer.init()
     # create sprite groups
     sprites = pygame.sprite.Group()
     enemy = pygame.sprite.Group()
@@ -48,6 +50,11 @@ def startGame(screen):
     # create HUD
     hud = HUD(screen)
 
+    explodeSound = pygame.mixer.Sound('explosion.ogg')
+    bgMusic = pygame.mixer.Sound('bgloop.ogg')
+    wooshSound = pygame.mixer.Sound('woosh.ogg')
+    bgMusic.play(-1)
+
     # start game loop
     clock = pygame.time.Clock()
     while True:
@@ -65,8 +72,10 @@ def startGame(screen):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and alive:
                 if pause:
                     pause = False
+                    bgMusic.play(-1)
                 else:
                     pause = True
+                    bgMusic.stop()
         key = pygame.key.get_pressed()
         if key[pygame.K_r]:
             f = open('highScore', 'w')
@@ -92,6 +101,7 @@ def startGame(screen):
                     difficulty = 4
 
             if alive and (not pause) and len(enemy.sprites()) < difficulty:
+                wooshSound.play()
                 enemyShip = EnemyShip(enemy, [random.randint(10, 1000), random.randint(10, 750)], 6.8, 13, Weapon(playerDeadly, 0), 'img/enemyship1.png', playerShip)
 
         if alive and (not pause):
@@ -112,9 +122,12 @@ def startGame(screen):
 
             for deadPlayer in deadPlayerList:
                 alive = False
+                explodeSound.play()
+                bgMusic.stop()
 
             for deadEnemy in deadEnemyList:
                 score += 10
+                explodeSound.play()
                 if score > highScore:
                     highScore = score
 
@@ -143,7 +156,9 @@ def drawSpriteGroups(spriteGroups, screen):
         group.draw(screen)
 
 if __name__ == "__main__":
+    
     pygame.init()
+    
     main()
 
 
