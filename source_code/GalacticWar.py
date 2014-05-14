@@ -63,7 +63,7 @@ def startGame(screen):
     while True:
         tickReturn = clock.tick(60) / 1000.0
         timeCounter += tickReturn
-        pygame.display.set_caption("Galactic War v0.1.2 - {0:.3f} fps".format(clock.get_fps()))
+        pygame.display.set_caption("Galactic War v1.0.0 - {0:.3f} fps".format(clock.get_fps()))
 
         # handle events
         for event in pygame.event.get():
