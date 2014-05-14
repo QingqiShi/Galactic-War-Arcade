@@ -4,6 +4,7 @@
 import pygame
 import random
 import math
+import time
 
 # import different modules
 from Spaceship  import *
@@ -26,6 +27,8 @@ def startGame(screen):
     enemyDeadly = pygame.sprite.Group()
 
     spritesList = [sprites, enemy, playerDeadly, enemyDeadly]
+
+    gameStartTime = time.time()
 
     # create player ship
     playerShip = PlayerShip(sprites, [512, 384], 6.8, 13, Weapon(enemyDeadly, 0), 'img/playership1.png')
@@ -51,8 +54,19 @@ def startGame(screen):
         randomTick = random.randint(0, 4 * int(clock.get_fps())) == 1 and True or False
 
         # handle randomTick action
+        timePassed = time.time() - gameStartTime
+        print(timePassed)
+        if (timePassed < 15):
+            difficulty = 1
+        elif (timePassed < 30):
+            difficulty = 2
+        elif (timePassed < 45):
+            difficulty = 3
+        else:
+            difficulty = 4
+
         if randomTick:
-            if alive and len(enemy.sprites()) < 1:
+            if alive and len(enemy.sprites()) < difficulty:
                 enemyShip = EnemyShip(enemy, [random.randint(10, 1000), random.randint(10, 750)], 6.8, 13, Weapon(playerDeadly, 0), 'img/enemyship1.png', playerShip)
 
         updateSpriteGroups(spritesList, tickReturn)
