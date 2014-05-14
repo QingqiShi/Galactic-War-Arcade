@@ -36,6 +36,9 @@ def startGame(screen):
     playerShip = PlayerShip(sprites, [512, 384], 6.8, 13, Weapon(enemyDeadly, 0), 'img/playership1.png')
     alive = True
 
+    # create HUD
+    hud = HUD(screen)
+
     # start game loop
     clock = pygame.time.Clock()
     while True:
@@ -75,7 +78,6 @@ def startGame(screen):
         if alive and timeCounter > 5:
             timeCounter = 0
             score += 1
-            print(score)
 
         # update sprites
         updateSpriteGroups(spritesList, tickReturn)
@@ -90,14 +92,14 @@ def startGame(screen):
 
         for deadEnemy in deadEnemyList:
             score += 10
-            print(score)
 
-        updateScreen(spritesList, screen)
+        updateScreen(spritesList, screen, hud, score)
 
-def updateScreen(spritesList, screen):
+def updateScreen(spritesList, screen, hud, score):
     # background = pygame.image.load('img/bg.jpg')
     screen.fill((0,0,0))
     # screen.blit(background, (-500, -500))
+    hud.updateScore(score)
 
     drawSpriteGroups(spritesList, screen)
 
