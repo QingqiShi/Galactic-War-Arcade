@@ -31,6 +31,8 @@ def startGame(screen):
     spritesList = [sprites, enemy, playerDeadly, enemyDeadly]
 
     gameStartTime = time.time()
+    pauseTime = 0
+    pauseStartTime = time.time()
     score = 0
     timeCounter = 0
 
@@ -73,9 +75,11 @@ def startGame(screen):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and alive:
                 if pause:
                     pause = False
+                    pauseTime += time.time() - pauseStartTime
                     bgMusic.play(-1)
                 else:
                     pause = True
+                    pauseStartTime = time.time()
                     bgMusic.stop()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_a and alive:
                 if playerShip.autoShoot:
@@ -98,11 +102,11 @@ def startGame(screen):
         if randomTick:
             if alive and (not pause):
                 timePassed = time.time() - gameStartTime
-                if (timePassed < 15):
+                if (timePassed < 15 + pauseTime):
                     difficulty = 1
-                elif (timePassed < 30):
+                elif (timePassed < 30 + pauseTime):
                     difficulty = 2
-                elif (timePassed < 45):
+                elif (timePassed < 45 + pauseTime):
                     difficulty = 3
                 else:
                     difficulty = 4
