@@ -29,6 +29,7 @@ def startGame(screen):
     spritesList = [sprites, enemy, playerDeadly, enemyDeadly]
 
     gameStartTime = time.time()
+    score = 0
 
     # create player ship
     playerShip = PlayerShip(sprites, [512, 384], 6.8, 13, Weapon(enemyDeadly, 0), 'img/playership1.png')
@@ -38,7 +39,7 @@ def startGame(screen):
     clock = pygame.time.Clock()
     while True:
         tickReturn = clock.tick(60) / 1000.0
-        pygame.display.set_caption("Galactic War v0.1.0 - {0:.3f} fps".format(clock.get_fps()))
+        pygame.display.set_caption("Galactic War v0.1.2 - {0:.3f} fps".format(clock.get_fps()))
 
         # handle events
         for event in pygame.event.get():
@@ -54,31 +55,34 @@ def startGame(screen):
         randomTick = random.randint(0, 4 * int(clock.get_fps())) == 1 and True or False
 
         # handle randomTick action
-        timePassed = time.time() - gameStartTime
-        print(timePassed)
-        if (timePassed < 15):
-            difficulty = 1
-        elif (timePassed < 30):
-            difficulty = 2
-        elif (timePassed < 45):
-            difficulty = 3
-        else:
-            difficulty = 4
-
         if randomTick:
+            if alive:
+                timePassed = time.time() - gameStartTime
+                print(timePassed)
+                if (timePassed < 15):
+                    difficulty = 1
+                elif (timePassed < 30):
+                    difficulty = 2
+                elif (timePassed < 45):
+                    difficulty = 3
+                else:
+                    difficulty = 4
             if alive and len(enemy.sprites()) < difficulty:
                 enemyShip = EnemyShip(enemy, [random.randint(10, 1000), random.randint(10, 750)], 6.8, 13, Weapon(playerDeadly, 0), 'img/enemyship1.png', playerShip)
 
+        # update sprites
         updateSpriteGroups(spritesList, tickReturn)
 
-        pygame.sprite.groupcollide(enemy, enemyDeadly, True, True, pygame.sprite.collide_rect_ratio(0.4))
-
+        # test collision
         pygame.sprite.groupcollide(sprites, enemy, False, True, pygame.sprite.collide_rect_ratio(0.4))
-
+        deadEnemyList = pygame.sprite.groupcollide(enemy, enemyDeadly, True, True, pygame.sprite.collide_rect_ratio(0.4))
         deadPlayerList = pygame.sprite.groupcollide(sprites, playerDeadly, True, True, pygame.sprite.collide_rect_ratio(0.4))
 
         for deadPlayer in deadPlayerList:
             alive = False
+
+        for deadEnemy in deadEnemyList:
+            score += 1000
 
         updateScreen(spritesList, screen)
 
