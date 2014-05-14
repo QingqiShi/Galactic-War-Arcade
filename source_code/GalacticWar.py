@@ -3,6 +3,7 @@
 # import required modules
 import pygame
 import random
+import math
 
 # import different modules
 from Spaceship  import *
@@ -18,59 +19,71 @@ def main():
         quit = startGame(screen)
 
 def startGame(screen):
-    background = pygame.image.load('img/bg.jpg')
-
-    alive = True
-
+    # create sprite groups
     sprites = pygame.sprite.Group()
     enemy = pygame.sprite.Group()
     playerDeadly = pygame.sprite.Group()
     enemyDeadly = pygame.sprite.Group()
 
-    playerShip = PlayerShip(sprites, [512, 384], 6.8, 13, Weapon(enemyDeadly, 0), 'img/playership1.png')
+    spritesList = [sprites, enemy, playerDeadly, enemyDeadly]
 
+    # create player ship
+    playerShip = PlayerShip(sprites, [512, 384], 6.8, 13, Weapon(enemyDeadly, 0), 'img/playership1.png')
+    alive = True
+
+    # start game loop
     clock = pygame.time.Clock()
     while True:
         tickReturn = clock.tick(60) / 1000.0
         pygame.display.set_caption("Galactic War v0.1.0 - {0:.3f} fps".format(clock.get_fps()))
 
+        # handle events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return True
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                return True
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-                return False
+        key = pygame.key.get_pressed()
+        if key[pygame.K_r]:
+            return False
+        if key[pygame.K_ESCAPE]:
+            return True
 
-        if random.randint(1, 200) == 1:
-            randomTick = True
-        else:
-            randomTick = False
+        # calculate random tick
+        randomTick = random.randint(0, 4 * int(clock.get_fps())) == 1 and True or False
 
-        if randomTick and alive and len(enemy.sprites()) < 4:
-            enemyShip = EnemyShip(enemy, [random.randint(10, 1000), random.randint(10, 750)], 6.8, 13, Weapon(playerDeadly, 0), 'img/enemyship1.png', playerShip)
+        # handle randomTick action
+        if randomTick:
+            if alive and len(enemy.sprites()) < 1:
+                enemyShip = EnemyShip(enemy, [random.randint(10, 1000), random.randint(10, 750)], 6.8, 13, Weapon(playerDeadly, 0), 'img/enemyship1.png', playerShip)
 
-        sprites.update(tickReturn)
-        enemy.update(tickReturn)
-        enemyDeadly.update(tickReturn)
-        playerDeadly.update(tickReturn)
+        updateSpriteGroups(spritesList, tickReturn)
 
-        deadEnemyList = pygame.sprite.groupcollide(enemy, enemyDeadly, True, True, pygame.sprite.collide_rect_ratio(0.4))
+        pygame.sprite.groupcollide(enemy, enemyDeadly, True, True, pygame.sprite.collide_rect_ratio(0.4))
 
-        playerEnemyCrashList = pygame.sprite.groupcollide(sprites, enemy, False, True, pygame.sprite.collide_rect_ratio(0.4))
+        pygame.sprite.groupcollide(sprites, enemy, False, True, pygame.sprite.collide_rect_ratio(0.4))
 
         deadPlayerList = pygame.sprite.groupcollide(sprites, playerDeadly, True, True, pygame.sprite.collide_rect_ratio(0.4))
 
         for deadPlayer in deadPlayerList:
             alive = False
 
-        screen.fill((0,0,0))
-        screen.blit(background, (-500, -500))
-        sprites.draw(screen)
-        enemy.draw(screen)
-        enemyDeadly.draw(screen)
-        playerDeadly.draw(screen)
-        pygame.display.flip()
+        updateScreen(spritesList, screen)
+
+def updateScreen(spritesList, screen):
+    # background = pygame.image.load('img/bg.jpg')
+    screen.fill((0,0,0))
+    # screen.blit(background, (-500, -500))
+
+    drawSpriteGroups(spritesList, screen)
+
+    pygame.display.flip()
+
+def updateSpriteGroups(spriteGroups, tickReturn):
+    for group in spriteGroups:
+        group.update(tickReturn)
+
+def drawSpriteGroups(spriteGroups, screen):
+    for group in spriteGroups:
+        group.draw(screen)
 
 if __name__ == "__main__":
     pygame.init()

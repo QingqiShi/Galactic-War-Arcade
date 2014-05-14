@@ -107,8 +107,6 @@ class PlayerShip(Spaceship):
 
             super(PlayerShip, self).calculateCenter()
 
-        
-
         mouseDistance = math.hypot(pygame.mouse.get_pos()[0] - self.center[0], pygame.mouse.get_pos()[1] - self.center[1])
 
         if (pygame.mouse.get_pressed()[2] and mouseDistance > 20):
