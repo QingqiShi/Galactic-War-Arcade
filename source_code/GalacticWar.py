@@ -10,7 +10,7 @@ import time
 from Spaceship  import *
 from Weapon import *
 from Meteoroid import *
-from PowerUp import *
+from Menu import *
 from HUD import *
 
 def main():
@@ -32,6 +32,14 @@ def startGame(screen):
     score = 0
     timeCounter = 0
 
+    f = open('highScore', 'r')
+    temp = f.read()
+    if temp != "":
+        highScore = int(temp)
+    else:
+        highScore = 0
+    f.close()
+
     # create player ship
     playerShip = PlayerShip(sprites, [512, 384], 6.8, 13, Weapon(enemyDeadly, 0), 'img/playership1.png')
     alive = True
@@ -49,11 +57,20 @@ def startGame(screen):
         # handle events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                f = open('highScore', 'w')
+                f.write(str(highScore))
+                f.close()
                 return True
         key = pygame.key.get_pressed()
         if key[pygame.K_r]:
+            f = open('highScore', 'w')
+            f.write(str(highScore))
+            f.close()
             return False
         if key[pygame.K_ESCAPE]:
+            f = open('highScore', 'w')
+            f.write(str(highScore))
+            f.close()
             return True
 
         # calculate random tick
@@ -75,33 +92,42 @@ def startGame(screen):
             if alive and len(enemy.sprites()) < difficulty:
                 enemyShip = EnemyShip(enemy, [random.randint(10, 1000), random.randint(10, 750)], 6.8, 13, Weapon(playerDeadly, 0), 'img/enemyship1.png', playerShip)
 
-        if alive and timeCounter > 5:
-            timeCounter = 0
-            score += 1
+        if alive:
 
-        # update sprites
-        updateSpriteGroups(spritesList, tickReturn)
+            if timeCounter > 5:
+                timeCounter = 0
+                score += 1
+                if score > highScore:
+                    highScore = score
 
-        # test collision
-        pygame.sprite.groupcollide(sprites, enemy, False, True, pygame.sprite.collide_rect_ratio(0.4))
-        deadEnemyList = pygame.sprite.groupcollide(enemy, enemyDeadly, True, True, pygame.sprite.collide_rect_ratio(0.4))
-        deadPlayerList = pygame.sprite.groupcollide(sprites, playerDeadly, True, True, pygame.sprite.collide_rect_ratio(0.4))
+            # update sprites
+            updateSpriteGroups(spritesList, tickReturn)
 
-        for deadPlayer in deadPlayerList:
-            alive = False
+            # test collision
+            pygame.sprite.groupcollide(sprites, enemy, False, True, pygame.sprite.collide_rect_ratio(0.4))
+            deadEnemyList = pygame.sprite.groupcollide(enemy, enemyDeadly, True, True, pygame.sprite.collide_rect_ratio(0.4))
+            deadPlayerList = pygame.sprite.groupcollide(sprites, playerDeadly, True, True, pygame.sprite.collide_rect_ratio(0.4))
 
-        for deadEnemy in deadEnemyList:
-            score += 10
+            for deadPlayer in deadPlayerList:
+                alive = False
 
-        updateScreen(spritesList, screen, hud, score)
+            for deadEnemy in deadEnemyList:
+                score += 10
+                if score > highScore:
+                    highScore = score
 
-def updateScreen(spritesList, screen, hud, score):
+        updateScreen(spritesList, screen, hud, score, highScore, alive)
+
+
+def updateScreen(spritesList, screen, hud, score, highScore, alive):
     # background = pygame.image.load('img/bg.jpg')
     screen.fill((0,0,0))
     # screen.blit(background, (-500, -500))
-    hud.updateScore(score)
 
     drawSpriteGroups(spritesList, screen)
+    hud.updateScore(score)
+    if not alive:
+        Menu().displayMenu(screen, 3, score, highScore)
 
     pygame.display.flip()
 
