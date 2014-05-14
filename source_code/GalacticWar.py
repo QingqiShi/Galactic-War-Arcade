@@ -46,6 +46,7 @@ def startGame(screen):
     playerShip = PlayerShip(sprites, [512, 384], 6.8, 13, Weapon(enemyDeadly, 0), 'img/playership1.png')
     alive = True
     pause = False
+    
 
     # create HUD
     hud = HUD(screen)
@@ -76,6 +77,12 @@ def startGame(screen):
                 else:
                     pause = True
                     bgMusic.stop()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_a and alive:
+                if playerShip.autoShoot:
+                    playerShip.autoShoot = False
+                else:
+                    playerShip.autoShoot = True
+            
         key = pygame.key.get_pressed()
         if key[pygame.K_r]:
             f = open('highScore', 'w')

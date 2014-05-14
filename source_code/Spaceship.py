@@ -95,6 +95,7 @@ class Spaceship(pygame.sprite.Sprite):
 class PlayerShip(Spaceship):
     def __init__(self, groups, position, acceleration, maxSpeed, weapon, image_path):
         super(PlayerShip, self).__init__(groups, position, acceleration, maxSpeed, weapon, image_path)
+        self.autoShoot = False
 
     def update(self, tickReturn):
         oldDirection = self.direction
@@ -116,8 +117,11 @@ class PlayerShip(Spaceship):
         else:
             super(PlayerShip, self).deccelerate(tickReturn)
 
-        if (pygame.mouse.get_pressed()[0]):
-            super(PlayerShip, self).fire()
+        if self.autoShoot:
+            self.fire()
+        else:
+            if (pygame.mouse.get_pressed()[0]):
+                super(PlayerShip, self).fire()
 
         self.rect.move_ip(self.velocity[0], self.velocity[1])
 
