@@ -9,7 +9,6 @@ import time
 # import different modules
 from Spaceship  import *
 from Weapon import *
-from Meteoroid import *
 from Menu import *
 from HUD import *
 
